@@ -78,7 +78,11 @@ const Skills = () => {
         duration: 0.7,
         ease: 'power2.out',
         onUpdate: function() {
-          percentEl.textContent = `${Math.round(gsap.getProperty(progressBar, "width") / gsap.getProperty(progressBar.parentNode, "width") * 100)}%`;
+          // Fix: Explicitly convert values to numbers before arithmetic operations
+          const progressWidth = parseFloat(gsap.getProperty(progressBar, "width") as string);
+          const parentWidth = parseFloat(gsap.getProperty(progressBar.parentNode as Element, "width") as string);
+          const percentage = Math.round((progressWidth / parentWidth) * 100);
+          percentEl.textContent = `${percentage}%`;
         },
       }, "<");
     });
