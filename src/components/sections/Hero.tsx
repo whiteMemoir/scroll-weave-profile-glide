@@ -2,10 +2,9 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { SplitText } from 'gsap/SplitText';
 
-// Register the plugins
-gsap.registerPlugin(ScrollTrigger, SplitText);
+// Register the ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -24,7 +23,7 @@ const Hero = () => {
     // Initial animation for hero entrance
     const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-    // Custom SplitText implementation since we don't have the actual plugin
+    // Custom text splitting implementation
     const splitHeading = () => {
       const text = heading.innerText;
       heading.innerHTML = '';
