@@ -19,61 +19,61 @@ const About = () => {
 
     if (!section || !heading || !text || !image) return;
 
-    // Heading animation
-    gsap.fromTo(
-      heading,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: heading,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none none',
-        },
+    // Set initial state
+    gsap.set(heading, { y: 50, opacity: 0 });
+    
+    const paragraphs = text.querySelectorAll('p');
+    gsap.set(paragraphs, { y: 50, opacity: 0 });
+    
+    gsap.set(image, { x: 50, opacity: 0, scale: 0.9 });
+
+    // Heading animation with scroll trigger
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: heading,
+        start: "top bottom-=100",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
       }
-    );
+    }).to(heading, {
+      y: 0,
+      opacity: 1,
+      duration: 0.5,
+    });
 
     // Text paragraphs animation
-    const paragraphs = text.querySelectorAll('p');
-    gsap.fromTo(
-      paragraphs,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        stagger: 0.2,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: text,
-          start: 'top bottom-=50',
-          toggleActions: 'play none none none',
-        },
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: text,
+        start: "top bottom-=50",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
       }
-    );
+    }).to(paragraphs, {
+      y: 0,
+      opacity: 1,
+      stagger: 0.1,
+      duration: 0.5,
+    });
 
     // Image animation
-    gsap.fromTo(
-      image,
-      { 
-        x: 50, 
-        opacity: 0,
-        scale: 0.9
-      },
-      {
-        x: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: image,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none none',
-        },
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: image,
+        start: "top bottom-=100",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
       }
-    );
+    }).to(image, {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      duration: 0.6,
+      ease: "power2.out",
+    });
 
     // Cleanup
     return () => {

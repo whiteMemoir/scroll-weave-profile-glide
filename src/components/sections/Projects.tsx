@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -41,48 +40,45 @@ const Projects = () => {
 
     if (!section || !heading || projectElements.length === 0) return;
 
-    // Heading animation
-    gsap.fromTo(
-      heading,
-      { y: 50, opacity: 0 },
-      {
+    // Set initial states
+    gsap.set(heading, { y: 50, opacity: 0 });
+    gsap.set(projectElements, { y: 50, opacity: 0, scale: 0.95 });
+
+    // Heading animation with bidirectional scroll trigger
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: heading,
+        start: "top bottom-=100",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
+      }
+    }).to(heading, {
+      y: 0,
+      opacity: 1,
+      duration: 0.5,
+    });
+
+    // Projects animation with bidirectional scroll trigger
+    projectElements.forEach((project, index) => {
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: project,
+          start: "top bottom-=50",
+          end: "bottom center",
+          scrub: 0.5,
+          toggleActions: "play reverse play reverse",
+        }
+      }).to(project, {
         y: 0,
         opacity: 1,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: heading,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+        scale: 1,
+        duration: 0.5,
+        delay: index * 0.05,
+        ease: 'power2.out',
+      });
 
-    // Projects animation with staggered reveal
-    projectElements.forEach((project, index) => {
-      // Scale and opacity animation
-      gsap.fromTo(
-        project,
-        { 
-          y: 50, 
-          opacity: 0,
-          scale: 0.95
-        },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          delay: index * 0.1,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: project,
-            start: 'top bottom-=50',
-            toggleActions: 'play none none none',
-          },
-        }
-      );
-
-      // Hover animation setup
+      // Hover animation setup - keep this as is since it's interactive
       if (project) {
         project.addEventListener('mouseenter', () => {
           gsap.to(project, {
@@ -106,7 +102,6 @@ const Projects = () => {
       }
     });
 
-    // Cleanup
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill(false));
       projectElements.forEach(project => {

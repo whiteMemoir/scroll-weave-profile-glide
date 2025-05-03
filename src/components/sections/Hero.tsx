@@ -20,9 +20,6 @@ const Hero = () => {
 
     if (!section || !heading || !subheading || !cta) return;
 
-    // Initial animation for hero entrance
-    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
-
     // Custom text splitting implementation
     const splitHeading = () => {
       const text = heading.innerText;
@@ -79,41 +76,61 @@ const Hero = () => {
     const headingWords = splitHeading();
     const subheadingWords = splitSubheading();
 
-    // Animation timeline
-    tl.set([headingWords, subheadingWords], { y: '100%', opacity: 0 });
+    // Set initial state for all elements
+    gsap.set([headingWords, subheadingWords], { y: '100%', opacity: 0 });
+    gsap.set(cta, { y: 30, opacity: 0 });
+
+    // Create a timeline for entrance animation
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: "top bottom",
+        end: "center center",
+        scrub: 0.5, // Smooth scrubbing effect
+        toggleActions: "play reverse play reverse", // Play on scroll down, reverse on scroll up
+      }
+    });
+
+    // Add animations to the timeline
     tl.to(headingWords, { 
       y: '0%', 
       opacity: 1, 
-      duration: 0.8, 
-      stagger: 0.1,
+      duration: 0.4, 
+      stagger: 0.05,
       ease: 'power3.out' 
     });
+    
     tl.to(subheadingWords, { 
       y: '0%', 
       opacity: 1, 
-      duration: 0.6, 
-      stagger: 0.05,
+      duration: 0.3, 
+      stagger: 0.025,
       ease: 'power3.out' 
-    }, '-=0.4');
-    tl.fromTo(cta, 
-      { y: 30, opacity: 0 }, 
-      { y: 0, opacity: 1, duration: 0.8 }, 
-      '-=0.2'
-    );
+    }, "-=0.2"); // Start slightly before the heading animation completes
+    
+    tl.to(cta, { 
+      y: 0, 
+      opacity: 1, 
+      duration: 0.4 
+    }, "-=0.1");
 
-    // Scroll animation
-    gsap.to(section, {
+    // Create a separate timeline for parallax effect when scrolling away from the section
+    const parallaxTl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'top top',
-        end: 'bottom top',
+        start: "top top",
+        end: "bottom top",
         scrub: true,
-      },
+      }
+    });
+
+    parallaxTl.to(section, {
       opacity: 0.5,
       y: 100,
     });
 
     return () => {
+      // Clean up all ScrollTrigger instances
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
   }, []);

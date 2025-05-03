@@ -24,55 +24,58 @@ const Contact = () => {
 
     if (!section || !heading || !form || !info) return;
 
-    // Heading animation
-    gsap.fromTo(
-      heading,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: heading,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-
-    // Form animation
-    gsap.fromTo(
-      form,
-      { x: -50, opacity: 0 },
-      {
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: form,
-          start: 'top bottom-=50',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-
-    // Info cards animation
+    // Set initial states
+    gsap.set(heading, { y: 50, opacity: 0 });
+    gsap.set(form, { x: -50, opacity: 0 });
+    
     const infoCards = info.querySelectorAll('.info-card');
-    gsap.fromTo(
-      infoCards,
-      { x: 50, opacity: 0 },
-      {
-        x: 0,
-        opacity: 1,
-        stagger: 0.2,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: info,
-          start: 'top bottom-=50',
-          toggleActions: 'play none none none',
-        },
+    gsap.set(infoCards, { x: 50, opacity: 0 });
+
+    // Heading animation with bidirectional scroll trigger
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: heading,
+        start: "top bottom-=100",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
       }
-    );
+    }).to(heading, {
+      y: 0,
+      opacity: 1,
+      duration: 0.5,
+    });
+
+    // Form animation with bidirectional scroll trigger
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: form,
+        start: "top bottom-=50",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
+      }
+    }).to(form, {
+      x: 0,
+      opacity: 1,
+      duration: 0.5,
+    });
+
+    // Info cards animation with bidirectional scroll trigger
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: info,
+        start: "top bottom-=50",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
+      }
+    }).to(infoCards, {
+      x: 0,
+      opacity: 1,
+      stagger: 0.1,
+      duration: 0.5,
+    });
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill(false));

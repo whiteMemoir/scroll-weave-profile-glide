@@ -26,23 +26,25 @@ const Skills = () => {
 
     if (!section || !heading || !skillsContainer) return;
 
-    // Heading animation
-    gsap.fromTo(
-      heading,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        scrollTrigger: {
-          trigger: heading,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+    // Set initial states
+    gsap.set(heading, { y: 50, opacity: 0 });
 
-    // Skills bars animation
+    // Heading animation with bidirectional scroll trigger
+    gsap.timeline({
+      scrollTrigger: {
+        trigger: heading,
+        start: "top bottom-=100",
+        end: "bottom center",
+        scrub: 0.5,
+        toggleActions: "play reverse play reverse",
+      }
+    }).to(heading, {
+      y: 0,
+      opacity: 1,
+      duration: 0.5,
+    });
+
+    // Skills bars animation with bidirectional scroll trigger
     const skillBars = skillsContainer.querySelectorAll('.skill-progress');
     
     skillBars.forEach((bar) => {
@@ -55,31 +57,33 @@ const Skills = () => {
       gsap.set(progressBar, { width: 0 });
       gsap.set(percentEl, { textContent: '0%' });
       
-      ScrollTrigger.create({
-        trigger: bar,
-        start: 'top bottom-=100',
-        onEnter: () => {
-          gsap.to(progressBar, {
-            width: targetWidth,
-            duration: 1.5,
-            ease: 'power2.out',
-          });
-          
-          gsap.to(percentEl, {
-            textContent: `${targetWidth}`,
-            duration: 1.5,
-            ease: 'power2.out',
-            snap: { textContent: 1 },
-            onUpdate: () => {
-              percentEl.textContent = `${Math.round(Number(percentEl.textContent))}%`;
-            },
-          });
-        },
-        once: true,
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: bar,
+          start: "top bottom-=100",
+          end: "bottom center",
+          scrub: 0.5,
+          toggleActions: "play reverse play reverse",
+        }
       });
+
+      tl.to(progressBar, {
+        width: targetWidth,
+        duration: 0.7,
+        ease: 'power2.out',
+      });
+      
+      tl.to(percentEl, {
+        textContent: targetWidth,
+        duration: 0.7,
+        ease: 'power2.out',
+        onUpdate: function() {
+          percentEl.textContent = `${Math.round(gsap.getProperty(progressBar, "width") / gsap.getProperty(progressBar.parentNode, "width") * 100)}%`;
+        },
+      }, "<");
     });
 
-    // SVG animation
+    // SVG animation with bidirectional scroll trigger
     const svgSection = section.querySelector('.svg-animation');
     const paths = svgSection?.querySelectorAll('path');
     
@@ -92,17 +96,18 @@ const Skills = () => {
           strokeDashoffset: length,
         });
         
-        ScrollTrigger.create({
-          trigger: svgSection,
-          start: 'top bottom-=100',
-          onEnter: () => {
-            gsap.to(path, {
-              strokeDashoffset: 0,
-              duration: 2,
-              ease: 'power2.out',
-            });
-          },
-          once: true,
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: svgSection,
+            start: "top bottom-=100",
+            end: "bottom center",
+            scrub: 0.5,
+            toggleActions: "play reverse play reverse",
+          }
+        }).to(path, {
+          strokeDashoffset: 0,
+          duration: 1,
+          ease: 'power2.out',
         });
       });
     }
